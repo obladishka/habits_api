@@ -33,7 +33,11 @@ class User(AbstractUser):
     )
     email = models.EmailField(unique=True, verbose_name="email", help_text="Enter your email")
     tg_username = models.CharField(
-        max_length=150, verbose_name="telegram username", help_text="Enter your telegram username starting with @", null=True, blank=True
+        max_length=150,
+        verbose_name="telegram username",
+        help_text="Enter your telegram username starting with @",
+        null=True,
+        blank=True,
     )
 
     USERNAME_FIELD = "email"

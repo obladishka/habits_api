@@ -114,18 +114,14 @@ SIMPLE_JWT = {
     "UPDATE_LAST_LOGIN": True,
 }
 
-CORS_ALLOWED_ORIGINS = (
-    "http://localhost:8000",
-)
+CORS_ALLOWED_ORIGINS = ("http://localhost:8000",)
 
-CSRF_TRUSTED_ORIGINS = (
-    "http://localhost:8000",
-)
+CSRF_TRUSTED_ORIGINS = ("http://localhost:8000",)
 
 SPECTACULAR_SETTINGS = {
     "TITLE": "Habits API",
     "DESCRIPTION": "Habits API is an useful habits tracker. The logic of the app is based on the "
-                   "book \"Atomic Habits\" (2018) by James Clear.",
+    'book "Atomic Habits" (2018) by James Clear.',
     "VERSION": "0.0.1",
     "SERVE_INCLUDE_SCHEMA": False,
     "SWAGGER_UI_SETTINGS": {
