@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     "habits",
     "rest_framework",
     "rest_framework_simplejwt",
+    "corsheaders",
     "drf_spectacular",
     "django_celery_beat",
 ]
@@ -38,6 +39,7 @@ REST_FRAMEWORK = {
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -111,6 +113,14 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "UPDATE_LAST_LOGIN": True,
 }
+
+CORS_ALLOWED_ORIGINS = (
+    "http://localhost:8000",
+)
+
+CSRF_TRUSTED_ORIGINS = (
+    "http://localhost:8000",
+)
 
 SPECTACULAR_SETTINGS = {
     "TITLE": "Habits API",
