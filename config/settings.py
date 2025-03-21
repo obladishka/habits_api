@@ -141,3 +141,25 @@ CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60
 
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+
+HABIT_FREQUENCY = (
+    ("m x-y * * *", "every hour"),
+    ("m x-y/2 * * *", "every 2 hours"),
+    ("m x-y/2 * * *", "every 3 hours"),
+    ("m x,z,y * * *", "3 times per day"),
+    ("m x,y * * *", "2 times per day"),
+    ("m h * * *", "every day"),
+    ("m h */2 * *", "every 2 days"),
+    ("m h */3 * *", "every 3 days"),
+    ("m h * * d", "selected days"),
+)
+
+WEEKDAYS = (
+    (0, "Sun"),
+    (1, "Mon"),
+    (2, "Tue"),
+    (3, "Wed"),
+    (4, "Thu"),
+    (5, "Fri"),
+    (6, "Sat"),
+)

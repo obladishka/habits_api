@@ -40,6 +40,8 @@ class User(AbstractUser):
         blank=True,
     )
 
+    objects = UserManager()
+
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
