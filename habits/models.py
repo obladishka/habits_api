@@ -13,13 +13,13 @@ class Habit(models.Model):
     time = models.DateTimeField(
         verbose_name="time",
         help_text="Enter the time when a habit should be performed. In case a habit should be performed several times "
-                  "per day, the end time should also be selected.",
+        "per day, the end time should also be selected.",
     )
     action = models.CharField(max_length=200, verbose_name="action", help_text="Enter the action to perform.")
     is_pleasant = models.BooleanField(
         verbose_name="pleasant or not",
         help_text="Select whether a habit is pleasant or not. "
-                  "Only pleasant habits can serve as rewards for good habits.",
+        "Only pleasant habits can serve as rewards for good habits.",
     )
     related_habit = models.ForeignKey(
         "self",
@@ -33,7 +33,7 @@ class Habit(models.Model):
         choices=HABIT_FREQUENCY,
         verbose_name="frequency",
         help_text="Select how often a habit should be performed. "
-                  "NOTE! A habit should be performed once a week at least.",
+        "NOTE! A habit should be performed once a week at least.",
         default="m h * * *",
     )
     reward = models.CharField(
