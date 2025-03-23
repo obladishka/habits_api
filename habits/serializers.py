@@ -6,15 +6,7 @@ from habits.validators import HabitValidator
 
 
 class HabitSerializer(serializers.ModelSerializer):
-    end_time = serializers.DateTimeField(
-        required=False, verbose_name="end time", help_text="Enter the last time for habit performance."
-    )
-    weekdays = serializers.MultipleChoiceField(
-        choices=WEEKDAYS,
-        required=False,
-        verbose_name="weekdays",
-        help_text="Select days when a habit should be performed.",
-    )
+    weekdays = serializers.MultipleChoiceField(choices=WEEKDAYS, required=False, read_only=True)
 
     class Meta:
         model = Habit
