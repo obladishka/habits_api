@@ -1,7 +1,10 @@
 from rest_framework import generics
 
-from habits.serializers import HabitSerializer
-from habits.services import make_replacements
+from habits.models import Habit
+from habits.paginators import HabitPagination
+from habits.serializers import HabitSerializer, PublicHabitSerializer
+from habits.services import create_replacements, make_replacements
+from users.permissions import IsUser
 
 
 class HabitCreateAPIView(generics.CreateAPIView):
@@ -10,12 +13,46 @@ class HabitCreateAPIView(generics.CreateAPIView):
     def perform_create(self, serializer):
         habit = serializer.save(user=self.request.user)
         if not habit.is_pleasant:
-            m = habit.time.time().minute
-            h = x = habit.time.time().hour
-            y = habit.end_time.time().hour if habit.end_time else "0"
-            z = (x + y) // 2
-            d = ",".join([day.day for day in habit.days_of_week.all()]) if habit.days_of_week else "d"
-            replacements = {"m": str(m), "x": str(x), "y": str(y), "z": str(z), "h": str(h), "d": d}
+            replacements = create_replacements(habit)
             habit.frequency = make_replacements(habit.frequency, replacements)
             habit.save()
+
+
+class PublicHabitListAPIView(generics.ListAPIView):
+    serializer_class = PublicHabitSerializer
+
+    def get_queryset(self):
+        return Habit.objects.filter(is_public=True)
+
+
+class HabitListAPIView(generics.ListAPIView):
+    serializer_class = HabitSerializer
+    pagination_class = HabitPagination
+
+    def get_queryset(self):
+        return Habit.objects.filter(user=self.request.user)
+
+
+class HabitRetrieveAPIView(generics.RetrieveAPIView):
+    queryset = Habit.objects.all()
+    serializer_class = HabitSerializer
+    permission_classes = (IsUser,)
+
+
+class HabitUpdateAPIView(generics.UpdateAPIView):
+    queryset = Habit.objects.all()
+    serializer_class = HabitSerializer
+    permission_classes = (IsUser,)
+
+    def perform_update(self, serializer):
+        habit = serializer.save(user=self.request.user)
         habit.save()
+        if not habit.is_pleasant:
+            replacements = create_replacements(habit)
+            habit.frequency = make_replacements(habit.frequency, replacements)
+            habit.save()
+
+
+class HabitDestroyAPIView(generics.DestroyAPIView):
+    queryset = Habit.objects.all()
+    permission_classes = (IsUser,)

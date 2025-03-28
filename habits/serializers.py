@@ -1,26 +1,28 @@
 from rest_framework import serializers
 
-from config.settings import WEEKDAYS
 from habits.models import Habit
 from habits.validators import HabitValidator
 
 
 class HabitSerializer(serializers.ModelSerializer):
-    weekdays = serializers.MultipleChoiceField(choices=WEEKDAYS, required=False, read_only=True)
 
     class Meta:
         model = Habit
         fields = "__all__"
         validators = [HabitValidator()]
 
-    def validate_time_needed(self, value):
-        """Validates that time needed to perform a habit is less than 2 mins (120 secs)."""
-        if value > 120:
-            raise serializers.ValidationError("The time should be less then 2 mins (120 secs).")
-        return value
+    def to_internal_value(self, data):
+        if self.instance:
+            if not data.get("days_of_week"):
+                data["days_of_week"] = [day.pk for day in self.instance.days_of_week.all()]
+            for field in self.fields.keys():
+                if field not in data.keys():
+                    data[field] = getattr(self.instance, field)
+        return data
 
-    def validate_related_habit(self, value):
-        """Validates that only a pleasant habit can be selected as related."""
-        if not value.is_pleasant:
-            raise serializers.ValidationError("Only a pleasant habit can be selected as related.")
-        return value
+
+class PublicHabitSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Habit
+        fields = ("action", "is_pleasant", "time_needed")

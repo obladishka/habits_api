@@ -58,7 +58,7 @@ class Habit(models.Model):
     end_time = models.DateTimeField(
         verbose_name="end time",
         help_text="Enter the time when a habit should be performed for the last time per day. "
-                  "Only for good habits that should be performed several times per day!",
+        "Only for good habits that should be performed several times per day!",
         null=True,
         blank=True,
     )

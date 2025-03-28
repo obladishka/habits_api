@@ -1,7 +1,21 @@
 from rest_framework import serializers
 
+from habits.models import Habit
+
 
 class HabitValidator:
+    def validate_time_needed(self, attrs):
+        """Validates that time needed to perform a habit is less than 2 mins (120 secs)."""
+        if attrs["time_needed"] > 120:
+            raise serializers.ValidationError("The time should be less then 2 mins (120 secs).")
+
+    def validate_related_habit(self, attrs):
+        """Validates that only a pleasant habit can be selected as related."""
+        if attrs.get("related_habit_id"):
+            related_habit = Habit.objects.get(pk=attrs.get("related_habit_id"))
+            if not related_habit.is_pleasant:
+                raise serializers.ValidationError("Only a pleasant habit can be selected as related.")
+
     def validate_reward(self, attrs):
         """Validates that only reward or a related habit are selected in the same time."""
         if attrs.get("related_habit") and attrs.get("reward"):
@@ -12,14 +26,14 @@ class HabitValidator:
     def validate_pleasant_habit(self, attrs):
         """Validates that a pleasant habit doesn't additionally have reward, related habit,
         time and frequency to be performed."""
-        if attrs["is_pleasant"] and any(
+        if attrs.get("is_pleasant") and any(
             [attrs.get("related_habit"), attrs.get("reward"), attrs.get("frequency"), attrs.get("time")]
         ):
             raise serializers.ValidationError(
                 "Pleasant habit is already reward, it can't have a related habit or reward "
                 "and should not be performed regularly."
             )
-        if not attrs["is_pleasant"] and not any(
+        if not attrs.get("is_pleasant") and not any(
             [attrs.get("related_habit"), attrs.get("reward"), attrs.get("frequency"), attrs.get("time")]
         ):
             raise serializers.ValidationError(
@@ -54,6 +68,8 @@ class HabitValidator:
             )
 
     def __call__(self, attrs):
+        self.validate_time_needed(attrs)
+        self.validate_related_habit(attrs)
         self.validate_reward(attrs)
         self.validate_pleasant_habit(attrs)
         self.validate_end_time(attrs)
