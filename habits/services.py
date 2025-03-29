@@ -1,4 +1,7 @@
+import json
 from datetime import datetime
+
+from django_celery_beat.models import CrontabSchedule, PeriodicTask
 
 from habits.models import Habit
 
@@ -18,3 +21,26 @@ def make_replacements(text: str, replacements: dict) -> str:
     for k, v in replacements.items():
         text = text.replace(k, v)
     return text
+
+
+def create_schedule(crontab: str) -> CrontabSchedule:
+    """Creates schedule to send reminders."""
+    minute, hour, day_of_month, month_of_year, day_of_week = crontab.split()
+    schedule, created = CrontabSchedule.objects.get_or_create(
+        minute=minute,
+        hour=hour,
+        day_of_week=day_of_week,
+        day_of_month=day_of_month,
+        month_of_year=month_of_year,
+    )
+    return schedule
+
+
+def create_task(schedule: CrontabSchedule, habit: Habit) -> None:
+    """Creates period task to send reminders."""
+    PeriodicTask.objects.create(
+        crontab=schedule,
+        name=f"Sending reminder {habit.pk}",
+        task="habits.tasks.send_message",
+        kwargs=json.dumps({"pk": habit.pk}),
+    )

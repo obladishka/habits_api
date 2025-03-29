@@ -32,10 +32,10 @@ class User(AbstractUser):
         max_length=150, verbose_name="username", help_text="Enter your username", null=True, blank=True
     )
     email = models.EmailField(unique=True, verbose_name="email", help_text="Enter your email")
-    tg_username = models.CharField(
-        max_length=150,
-        verbose_name="telegram username",
-        help_text="Enter your telegram username starting with @",
+    tg_chat_id = models.CharField(
+        max_length=50,
+        verbose_name="telegram chat id",
+        help_text="Enter your telegram chat id (NOT your username that starts with @)",
         null=True,
         blank=True,
     )

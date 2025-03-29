@@ -3,7 +3,7 @@ from rest_framework import generics
 from habits.models import Habit
 from habits.paginators import HabitPagination
 from habits.serializers import HabitSerializer, PublicHabitSerializer
-from habits.services import create_replacements, make_replacements
+from habits.services import create_replacements, create_schedule, create_task, make_replacements
 from users.permissions import IsUser
 
 
@@ -16,6 +16,11 @@ class HabitCreateAPIView(generics.CreateAPIView):
             replacements = create_replacements(habit)
             habit.frequency = make_replacements(habit.frequency, replacements)
             habit.save()
+            print(habit.user.tg_chat_id)
+
+            if habit.user.tg_chat_id:
+                schedule = create_schedule(habit.frequency)
+                create_task(schedule, habit)
 
 
 class PublicHabitListAPIView(generics.ListAPIView):

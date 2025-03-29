@@ -142,15 +142,15 @@ CELERY_TASK_TIME_LIMIT = 30 * 60
 
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+
 HABIT_FREQUENCY = (
     ("m x-y * * *", "every hour"),
     ("m x-y/2 * * *", "every 2 hours"),
-    ("m x-y/2 * * *", "every 3 hours"),
+    ("m x-y/3 * * *", "every 3 hours"),
     ("m x,z,y * * *", "3 times per day"),
     ("m x,y * * *", "2 times per day"),
     ("m h * * *", "every day"),
-    ("m h */2 * *", "every 2 days"),
-    ("m h */3 * *", "every 3 days"),
     ("m h * * d", "selected days"),
 )
 
