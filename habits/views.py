@@ -1,3 +1,5 @@
+from django.shortcuts import get_object_or_404
+from django_celery_beat.models import PeriodicTask
 from rest_framework import generics
 
 from habits.models import Habit
@@ -16,7 +18,6 @@ class HabitCreateAPIView(generics.CreateAPIView):
             replacements = create_replacements(habit)
             habit.frequency = make_replacements(habit.frequency, replacements)
             habit.save()
-            print(habit.user.tg_chat_id)
 
             if habit.user.tg_chat_id:
                 schedule = create_schedule(habit.frequency)
@@ -51,11 +52,18 @@ class HabitUpdateAPIView(generics.UpdateAPIView):
 
     def perform_update(self, serializer):
         habit = serializer.save(user=self.request.user)
-        habit.save()
         if not habit.is_pleasant:
             replacements = create_replacements(habit)
             habit.frequency = make_replacements(habit.frequency, replacements)
             habit.save()
+
+            if habit.user.tg_chat_id:
+                task = get_object_or_404(PeriodicTask, name=f"Sending reminder {habit.pk}")
+                schedule = create_schedule(habit.frequency)
+                if task:
+                    task.enabled = False
+                    task.delete()
+                create_task(schedule, habit)
 
 
 class HabitDestroyAPIView(generics.DestroyAPIView):

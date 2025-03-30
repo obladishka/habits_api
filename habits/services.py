@@ -42,5 +42,5 @@ def create_task(schedule: CrontabSchedule, habit: Habit) -> None:
         crontab=schedule,
         name=f"Sending reminder {habit.pk}",
         task="habits.tasks.send_message",
-        kwargs=json.dumps({"pk": habit.pk}),
+        args=json.dumps([habit.pk]),
     )
