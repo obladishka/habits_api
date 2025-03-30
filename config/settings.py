@@ -151,6 +151,8 @@ HABIT_FREQUENCY = (
     ("m x,z,y * * *", "3 times per day"),
     ("m x,y * * *", "2 times per day"),
     ("m h * * *", "every day"),
+    ("m h */2 * *", "every 2 days"),
+    ("m h */3 * *", "every 3 days"),
     ("m h * * d", "selected days"),
 )
 

@@ -20,7 +20,7 @@ class HabitValidator:
 
     def validate_reward(self, attrs):
         """Validates that only reward or a related habit are selected in the same time."""
-        if attrs.get("related_habit") and attrs.get("reward"):
+        if attrs.get("related_habit_id") and attrs.get("reward"):
             raise serializers.ValidationError(
                 "Related habit and reward can't be selected together. Select 1 of 2 options."
             )
@@ -29,17 +29,21 @@ class HabitValidator:
         """Validates that a pleasant habit doesn't additionally have reward, related habit,
         time and frequency to be performed."""
         if attrs.get("is_pleasant") and any(
-            [attrs.get("related_habit"), attrs.get("reward"), attrs.get("frequency"), attrs.get("time")]
+            [attrs.get("related_habit_id"), attrs.get("reward"), attrs.get("frequency"), attrs.get("time")]
         ):
             raise serializers.ValidationError(
                 "Pleasant habit is already reward, it can't have a related habit or reward "
                 "and should not be performed regularly."
             )
         if not attrs.get("is_pleasant") and not any(
-            [attrs.get("related_habit"), attrs.get("reward"), attrs.get("frequency"), attrs.get("time")]
+            [
+                all([attrs.get("reward"), attrs.get("frequency"), attrs.get("time")]),
+                all([attrs.get("related_habit_id"), attrs.get("frequency"), attrs.get("time")]),
+            ]
         ):
             raise serializers.ValidationError(
-                "Good habit should have a reward or a related habit and should be performed regularly."
+                "Good habit should have a reward or a related habit and should be performed regularly "
+                "and on specific time."
             )
 
     def validate_end_time(self, attrs):
