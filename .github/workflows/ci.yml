@@ -60,6 +60,10 @@ jobs:
         sudo -u postgres psql -c "CREATE USER test_user WITH PASSWORD 'test_password';"
         sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE test_db TO test_user;"
 
+    - name: Grant privileges to test_user
+      run: |
+        sudo -u postgres psql -c "ALTER USER test_user CREATEDB;"
+
     - name: Run tests
       run: python manage.py test
 
