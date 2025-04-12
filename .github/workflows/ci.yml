@@ -43,13 +43,6 @@ jobs:
         poetry config virtualenvs.create false
         poetry install --no-root
 
-    - name: Run Redis
-      run: |
-        sudo apt-get install redis-server
-        sudo systemctl start redis-server
-      env:
-        REDIS_HOST: ${{ secrets.REDIS_HOST }}
-
     - name: Create .env file
       run: |
         echo '"${{ secrets.ENV_FILE }}"' | sed "s/\"//g" > .env
