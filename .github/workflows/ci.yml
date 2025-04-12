@@ -26,6 +26,13 @@ jobs:
   test:
     needs: lint
     runs-on: ubuntu-latest
+    env:
+      POSTGRES_DB: test_db
+      POSTGRES_USER: test_user
+      POSTGRES_PASSWORD: test_password
+      POSTGRES_HOST: localhost
+      POSTGRES_PORT: 5432
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
 
     steps:
     - name: Check out code
@@ -43,10 +50,15 @@ jobs:
         poetry config virtualenvs.create false
         poetry install --no-root
 
-    - name: Create .env file
+    - name: Install PostgreSQL
+      run: sudo apt-get install -y postgresql postgresql-contrib
+
+    - name: Set up database
       run: |
-        echo '"${{ secrets.ENV_FILE }}"' | sed "s/\"//g" > .env
-        echo "TAG=${{ github.sha }}" >> .env
+        sudo service postgresql start
+        sudo -u postgres psql -c "CREATE DATABASE test_db;"
+        sudo -u postgres psql -c "CREATE USER test_user WITH PASSWORD 'test_password';"
+        sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE test_db TO test_user;"
 
     - name: Run tests
       run: python manage.py test
