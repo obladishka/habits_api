@@ -17,6 +17,8 @@ celery = "^5.4.0"
 django-celery-beat = "^2.7.0"
 redis = "^5.2.1"
 eventlet = "^0.39.0"
+django-cors-headers = "^4.7.0"
+requests = "^2.32.3"
 
 
 [tool.poetry.group.lint.dependencies]
