@@ -14,8 +14,6 @@ services:
     depends_on:
       - db
       - redis
-    networks:
-      - habit_network
     env_file:
       - ./.env
 
@@ -30,8 +28,6 @@ services:
     depends_on:
       - db
       - redis
-    networks:
-      - habit_network
     env_file:
       - ./.env
 
@@ -39,8 +35,6 @@ services:
     image: postgres:16
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    networks:
-      - habit_network
     env_file:
       - ./.env
 
@@ -48,8 +42,6 @@ services:
     image: redis:7
     volumes:
       - redis_data:/data
-    networks:
-      - habit_network
     env_file:
       - ./.env
 
@@ -59,8 +51,6 @@ services:
        bash -c "celery -A config worker --loglevel=info --pool=solo"
     volumes:
       - .:/app
-    networks:
-      - habit_network
     env_file:
       - ./.env
     depends_on:
@@ -73,18 +63,12 @@ services:
       bash -c "celery -A config beat -l info"
     volumes:
       - .:/app
-    networks:
-      - habit_network
     env_file:
       - ./.env
     depends_on:
       - redis
       - db
       - celery
-
-networks:
-  habit_network:
-    driver: bridge
 
 volumes:
   postgres_data:
