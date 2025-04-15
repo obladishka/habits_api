@@ -69,3 +69,4 @@ class HabitUpdateAPIView(generics.UpdateAPIView):
 class HabitDestroyAPIView(generics.DestroyAPIView):
     queryset = Habit.objects.all()
     permission_classes = (IsUser,)
+    serializer_class = HabitSerializer
