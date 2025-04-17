@@ -1,10 +1,22 @@
-version: '3.9'
-
 services:
+  db:
+    image: postgres:16
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    networks:
+      - my_network
+    env_file:
+      - .env
+    healthcheck:
+      test: [ "CMD-SHELL", "pg-isready -h db -U $POSTGRES_USER" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   web:
     build: .
     command: >
-        sh -c "python manage.py makemigrations && python manage.py migrate && python manage.py migrate django_celery_beat && python manage.py create_weekdays && python manage.py collectstatic --noinput && gunicorn config.wsgi:application --bind 0.0.0.0:8000"
+        sh -c "python manage.py migrate && python manage.py migrate django_celery_beat && python manage.py create_weekdays && python manage.py collectstatic --noinput && gunicorn config.wsgi:application --bind 0.0.0.0:8000"
     volumes:
       - .:/app
       - static_volume:/app/staticfiles
@@ -12,37 +24,36 @@ services:
       - "8000"
     depends_on:
       - db
-      - redis
+    networks:
+      - my_network
     env_file:
       - ./.env
 
   nginx:
     build:
-      context: ./nginx/
-    ports:
-      - "80:80"
+      context: ./nginx
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - static_volume:/app/staticfiles
+    ports:
+      - "80:80"
+    networks:
+      - my_network
+    dns:
+      - 127.0.0.11
     depends_on:
-      - db
-      - redis
+      - web
     env_file:
-      - ./.env
-
-  db:
-    image: postgres:16
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    env_file:
-      - ./.env
+      - .env
 
   redis:
-    image: redis:7
+    image: redis:latest
     volumes:
       - redis_data:/data
     env_file:
-      - ./.env
+      - .env
+    networks:
+      - my_network
 
   celery:
     build: .
@@ -50,11 +61,14 @@ services:
        bash -c "celery -A config worker --loglevel=info --pool=solo"
     volumes:
       - .:/app
-    env_file:
-      - ./.env
     depends_on:
       - redis
       - db
+      - web
+    networks:
+      - my_network
+    env_file:
+      - .env
 
   celery-beat:
     build: .
@@ -62,12 +76,18 @@ services:
       bash -c "celery -A config beat -l info"
     volumes:
       - .:/app
-    env_file:
-      - ./.env
     depends_on:
       - redis
       - db
-      - celery
+      - web
+    networks:
+      - my_network
+    env_file:
+      - .env
+
+networks:
+  my_network:
+    driver: bridge
 
 volumes:
   postgres_data:
