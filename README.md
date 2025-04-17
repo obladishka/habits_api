@@ -36,7 +36,7 @@ nano .env
 ```commandline
 docker-compose up
 ```
-4. Congratulations! The project is set up successfully! To enjoy all the features go to http://158.160.172.16/users/register
+4. Congratulations! The project is set up successfully! To enjoy all the features go to http://158.160.177.36/habits
 and create a user account.
 
 ## Automatic deployment
